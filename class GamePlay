@@ -1,0 +1,223 @@
+using System.Collections.Generic;
+using TMPro;
+using Unity.VisualScripting;
+using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+using UnityEngine.Rendering;
+using NUnit.Framework;
+using System;
+
+public class GamePlay : MonoBehaviour
+{
+    public Button Restart;
+
+    public Button ButtonExit;
+    public TextMeshProUGUI HUBTern;
+
+    public GameObject PlayerInScene;
+    public GameObject EnemyInScene;
+
+    private Units Player;
+    private Units Enemy;
+    private bool PlayerTern = true;
+
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    void Start()
+    {
+        Player = PlayerInScene.GetComponent<Units>();
+        Enemy = EnemyInScene.GetComponent<Units>();
+		Player.ButtonAttack.onClick.AddListener(AttackOnClick);
+        Player.ButtonDefence.onClick.AddListener(DefenceOnClick);
+        Player.ButtonFire.onClick.AddListener(FireOnClick);
+        Player.ButtonRegeneration.onClick.AddListener(RegenerationOnClick);
+        Player.ButtonClear.onClick.AddListener(ClearOnClick);
+        ButtonExit.onClick.AddListener(Exit);
+        Restart.onClick.AddListener(Restarts);
+    }
+
+    void Exit()
+    {
+        Application.Quit();
+    }
+
+    void GameEndTern(bool Player)
+    {
+        if (Player)
+        {
+            PlayerTern = false;
+            HUBTern.text = "Ход противника";
+        }
+        else
+        {
+            PlayerTern = true;
+            HUBTern.text = "Ваш ход";
+        }
+    }
+
+    void PlayerEndTern()
+    {
+        Player.EndTern();
+        Enemy.ShowStats(false);
+        Player.ShowStats(true);
+        GameEndTern(true);
+    }
+
+    void EnemyEndTern()
+    {
+        Enemy.EndTern();
+        Enemy.ShowStats(false);
+        Player.ShowStats(true);
+        GameEndTern(false);
+
+    }
+    void Restarts()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+    void AttackOnClick()
+    {
+        if (PlayerTern)
+        {
+            Enemy.UnitTakeDamage(8);
+            PlayerEndTern();
+        }
+    }
+    void DefenceOnClick()
+    {
+        if (PlayerTern)
+        {
+            Player.UnitDefenceUp();
+            Player.UnitCooldownValueDefence(4);
+            PlayerEndTern();
+        }
+    }
+    void FireOnClick()
+    {
+        if (PlayerTern)
+        {
+            Enemy.UnitTakeDamage(5);
+            Enemy.UnitTakeEffect(1);
+            Player.UnitCooldownValueFire(6);
+            PlayerEndTern();
+        }
+
+    }
+    void RegenerationOnClick()
+    {
+        if (PlayerTern)
+        {
+            Player.UnitTakeEffect(2);
+            Player.UnitCooldownValueRegeneration(5);
+            PlayerEndTern();
+        }
+    }
+    void ClearOnClick()
+    {
+        if (PlayerTern)
+        {
+            Player.UnitTakeEffect(3);
+            Player.UnitCooldownValueClear(5);
+            PlayerEndTern();
+        }
+    }   
+
+    
+    void Update()
+    {
+        if (Input.GetKey("escape"))  // если нажата клавиша Esc (Escape)
+        {
+            Application.Quit();    // закрыть приложение
+        }
+        if (Input.GetKey("r"))
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
+        if (Player.UnitHealth() <= 0 || Enemy.UnitHealth() <= 0)
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
+        if (Player.UnitCooldownValueDefence() > 0)
+        {
+            Player.ButtonDefence.interactable = false;
+        }
+        else
+        {
+            Player.ButtonDefence.interactable = true;
+        }
+        if (Player.UnitCooldownValueFire() > 0)
+        {
+            Player.ButtonFire.interactable = false;
+        }
+        else
+        {
+            Player.ButtonFire.interactable = true;
+        }
+        if (Player.UnitCooldownValueRegeneration() > 0)
+        {
+            Player.ButtonRegeneration.interactable = false;
+        }
+        else
+        {
+            Player.ButtonRegeneration.interactable = true;
+        }
+        if (Player.UnitCooldownValueClear() > 0)
+        {
+            Player.ButtonClear.interactable = false;
+        }
+        else
+        {
+            Player.ButtonClear.interactable = true;
+        }
+        if (!PlayerTern)
+        {
+            List<int> EnemyUsed = new List<int>();
+            EnemyUsed.Add(0);
+            if (Enemy.UnitCooldownValueDefence() == 0)
+            {
+                EnemyUsed.Add(1);
+            }
+            if (Enemy.UnitCooldownValueFire() == 0)
+            {
+                EnemyUsed.Add(2);
+            }
+            if (Enemy.UnitCooldownValueRegeneration() == 0)
+            {
+                EnemyUsed.Add(3);
+            }
+            if (Enemy.UnitCooldownValueClear() == 0)
+            {
+                EnemyUsed.Add(4);
+            }
+
+            switch (EnemyUsed[UnityEngine.Random.Range(0,EnemyUsed.Count)])
+            {
+                case 0:
+                    Player.UnitTakeDamage(8);
+                    EnemyEndTern();
+                    break;
+                case 1:
+                    Enemy.UnitDefenceUp();
+                    Enemy.UnitCooldownValueDefence(4);
+                    EnemyEndTern();
+                    break;
+                case 2:
+                    Player.UnitTakeDamage(5);
+                    Player.UnitTakeEffect(1);
+                    Enemy.UnitCooldownValueFire(6);
+                    EnemyEndTern();
+                    break;
+                case 3:
+                    Enemy.UnitTakeEffect(2);
+                    Enemy.UnitCooldownValueRegeneration(5);
+                    EnemyEndTern();
+                    break;
+                case 4:
+                    Enemy.UnitTakeEffect(3);
+                    Enemy.UnitCooldownValueClear(5);
+                    EnemyEndTern();
+                    break;
+            }
+        }
+    }
+}
