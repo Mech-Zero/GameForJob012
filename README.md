@@ -23,7 +23,7 @@
 
 ## Открываем смотрим
 
-Откройте Units и GamePlay
+Откройте Units и GamePlay!!! 
 У меня нет времени делать все красиво, поэтому: [этот проект](https://github.com/Mech-Zero/GameForJob012/tree/main). 
 
 
