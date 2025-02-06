@@ -1,0 +1,210 @@
+using System.Collections.Generic;
+using TMPro;
+using Unity.VisualScripting;
+using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+using UnityEngine.Rendering;
+using NUnit.Framework;
+
+public class Units : MonoBehaviour
+{
+    //Buttons
+    public Button ButtonAttack;
+    public Button ButtonDefence;
+    public Button ButtonFire;
+    public Button ButtonRegeneration;
+    public Button ButtonClear;
+
+    //Bar
+    public Text BarHealth;
+    public TextMeshProUGUI BarDefence;
+    public TextMeshProUGUI BarFire;
+    public TextMeshProUGUI BarRegeneration;
+
+    //BarEffects
+    public TextMeshProUGUI CooldownDefence;
+    public TextMeshProUGUI CooldownFire;
+    public TextMeshProUGUI CooldownRegeneration;
+    public TextMeshProUGUI CooldownClear;
+    
+
+    //CoolDown
+    private int CooldownValueDefence = 0;
+    public void UnitCooldownValueDefence(int Value)
+    {
+        CooldownValueDefence+= Value;
+    }
+
+    public int UnitCooldownValueDefence()
+    {
+        return CooldownValueDefence;
+    }
+    private int CooldownValueFire = 0;
+
+    public void UnitCooldownValueFire(int Value)
+    {
+        CooldownValueFire+= Value;
+    }
+    public int UnitCooldownValueFire()
+    {
+        return CooldownValueFire;
+    }
+    private int CooldownValueRegeneration = 0;
+    
+    public void UnitCooldownValueRegeneration(int Value)
+    {
+        CooldownValueRegeneration+= Value;
+    }
+    public int UnitCooldownValueRegeneration()
+    {
+        return CooldownValueRegeneration;
+    }
+    private int CooldownValueClear = 0;
+    
+    public void UnitCooldownValueClear(int Value)
+    {
+        CooldownValueClear+= Value;
+    }
+    public int UnitCooldownValueClear()
+    {
+        return CooldownValueClear;
+    }
+
+    //Stats
+    private int Health = 100;
+    
+    public int UnitHealth()
+    {
+        return Health;
+    }
+    private int Defence = 0;
+
+    public int UnitDefence()
+    {
+        return Defence;
+    }
+    private int DefenceRoundUsed = 0;
+    private int Fire = 0;
+    public int UnitFire()
+    {
+        return Fire;
+    }
+    private int Regeneration = 0;
+    public int UnitRegeneration()
+    {
+        return Regeneration;
+    }
+
+
+    public void ShowStats(bool IsPlayer)
+    {
+        //Stats
+        BarHealth.text = $"{Health.ToString()}/100";
+        BarDefence.text = Defence.ToString();
+        BarFire.text = Fire.ToString();
+        BarRegeneration.text = Regeneration.ToString();
+        if (IsPlayer)
+        {
+            //cooldown
+            CooldownDefence.text = CooldownValueDefence.ToString();
+            CooldownFire.text = CooldownValueFire.ToString();
+            CooldownRegeneration.text = CooldownValueRegeneration.ToString();
+            CooldownClear.text = CooldownValueClear.ToString();
+        }
+    }
+
+    public void UnitTakeDamage(int Damage)
+    {
+        if (Defence > 0)
+        {
+            Defence -= Damage;
+            if (Defence < 0)
+            {
+                Health += Defence;
+                Defence = 0;
+            }
+        }
+        else
+        {
+            Health -= Damage;
+        }
+    }
+
+    public void UnitDefenceUp()
+    {
+        Defence = 5;
+        DefenceRoundUsed = 2;
+    }
+
+    public void UnitTakeEffect(int Effect)
+    {
+        if (Effect == 1)
+        {
+            Fire = 5;
+        }
+        if (Effect == 2)
+        {
+            Regeneration =3;
+        }
+        if (Effect == 3)
+        {
+            Fire = 0;
+        }
+    }
+
+    public void EndTern()
+    {
+        if (Fire > 0)
+        {
+            UnitTakeDamage(1);
+            Fire--;
+        }
+        if (Regeneration > 0)
+        {
+            Health += 2;
+            if (Health > 100)
+            {
+                Health = 100;
+            }
+            Regeneration--;
+        }
+        if (DefenceRoundUsed <= 0)
+        {
+            Defence = 0;
+        }
+        DefenceRoundUsed--;
+        if (CooldownValueDefence > 0)
+        {
+            CooldownValueDefence--;
+        }
+        if (CooldownValueFire > 0)
+        {
+            CooldownValueFire--;
+        }
+        if (CooldownValueRegeneration > 0)
+        {
+            CooldownValueRegeneration--;
+        }
+        if (CooldownValueClear > 0)
+        {
+            CooldownValueClear--;
+        }
+        
+        
+        
+
+}
+
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    void Start()
+    {
+        
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        
+    }
+}
