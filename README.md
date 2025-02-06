@@ -23,7 +23,6 @@
 
 ## Открываем смотрим
 
-_Welcome to GitHub Pages and Jekyll :tada:!_
 
 У меня нет времени делать все красиво, поэтому: [этот проект](https://github.com/Mech-Zero/GameForJob012/tree/main). 
 
